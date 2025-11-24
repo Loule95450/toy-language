@@ -1,4 +1,4 @@
-from toy.ast_nodes import ASTNode, Expression
+from toy.ast_nodes import ASTNode, Expression, Binary, Literal
 from toy.tokens import Token, TokenType
 
 class Parser:
@@ -23,9 +23,18 @@ class Parser:
     def parse_term(self) -> Expression:
         left = self.parse_primary()
 
+        while self.match(TokenType.PLUS, TokenType.MINUS):
+            operator = self.previous()
+            right = self.parse_primary()
+            left = Binary(left, operator, right)
+
+        return left
+
     def parse_primary(self) -> Expression:
         if self.match(TokenType.NUMBER):
             return Literal(float(self.previous().lexeme))
+
+        raise SyntaxError(f"Unexpected token {self.peek().type}, line={self.peek().line}")
 
     ####################
     # Utils
