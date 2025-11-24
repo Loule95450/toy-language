@@ -1,3 +1,4 @@
+from typing import Callable
 from toy.ast_nodes import ASTNode, Expression, Binary, Literal
 from toy.tokens import Token, TokenType
 
@@ -21,14 +22,10 @@ class Parser:
         return self.parse_term()
 
     def parse_term(self) -> Expression:
-        left = self.parse_primary()
+        return self.binary_left(self.parse_factor, TokenType.PLUS, TokenType.MINUS)
 
-        while self.match(TokenType.PLUS, TokenType.MINUS):
-            operator = self.previous()
-            right = self.parse_primary()
-            left = Binary(left, operator, right)
-
-        return left
+    def parse_factor(self) -> Expression:
+        return self.binary_left(self.parse_primary, TokenType.STAR, TokenType.SLASH)
 
     def parse_primary(self) -> Expression:
         if self.match(TokenType.NUMBER):
@@ -39,6 +36,17 @@ class Parser:
     ####################
     # Utils
     ####################
+
+    def binary_left(self, operand_fn: Callable, *operand_types: TokenType) -> Expression:
+        left = operand_fn()
+
+        while self.match(*operand_types):
+            operator = self.previous()
+            right = operand_fn()
+            left = Binary(left, operator, right)
+
+        return left
+
 
     def match(self, *types: TokenType) -> bool:
         for token_type in types:

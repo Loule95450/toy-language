@@ -44,3 +44,23 @@ def test_parse_term():
             Literal(2.0),
         ),
     ]
+
+def test_parse_factor():
+    source = "3 + 2 * 4"
+    lexer = Lexer(source)
+
+    tokens = lexer.tokenize()
+    parser = Parser(tokens)
+    ast = parser.parse()
+
+    assert ast == [
+        Binary(
+            Literal(3.0),
+            Token(TokenType.PLUS, "+", 1),
+            Binary(
+                Literal(2.0),
+                Token(TokenType.STAR, "*", 1),
+                Literal(4.0),
+            ),
+        ),
+    ]
