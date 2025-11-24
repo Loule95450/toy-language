@@ -1,0 +1,72 @@
+from dataclasses import dataclass
+from enum import auto, StrEnum
+
+
+class TokenType(StrEnum):
+    # Single-character tokens
+    LPAREN = auto()
+    RPAREN = auto()
+    LBRACE = auto()
+    RBRACE = auto()
+    SEMICOLON = auto()
+    COMMA = auto()
+    MINUS = auto()
+    PLUS = auto()
+    SLASH = auto()
+    STAR = auto()
+
+    # One or two character tokens
+    BANG = auto()
+    BANG_EQUAL = auto()
+    EQUAL = auto()
+    EQUAL_EQUAL = auto()
+    GREATER = auto()
+    GREATER_EQUAL = auto()
+    LESS = auto()
+    LESS_EQUAL = auto()
+
+    # Literals
+    IDENTIFIER = auto()
+    NUMBER = auto()
+    STRING = auto()
+
+    # Keywords
+    AND = auto()
+    ELSE = auto()
+    FALSE = auto()
+    FN = auto()
+    FOR = auto()
+    IF = auto()
+    NULL = auto()
+    OR = auto()
+    PRINT = auto()
+    RETURN = auto()
+    TRUE = auto()
+    VAR = auto()
+    WHILE = auto()
+
+    EOF = auto()
+
+
+@dataclass
+class Token:
+    type: TokenType
+    lexeme: str
+    line: int
+
+
+KEYWORDS = {
+    "and": TokenType.AND,
+    "else": TokenType.ELSE,
+    "false": TokenType.FALSE,
+    "fn": TokenType.FN,
+    "for": TokenType.FOR,
+    "if": TokenType.IF,
+    "null": TokenType.NULL,
+    "or": TokenType.OR,
+    "print": TokenType.PRINT,
+    "return": TokenType.RETURN,
+    "true": TokenType.TRUE,
+    "var": TokenType.VAR,
+    "while": TokenType.WHILE,
+}

@@ -1,0 +1,69 @@
+from src.toy.tokens import TokenType
+from toy.tokens import Token
+
+class Lexer:
+    def __init__(self, source: str):
+        self.source = source
+        self.tokens: list[Token] = []
+        self.line = 1
+        
+        self.start = 0
+        self.current = 0
+
+    def tokenize(self) -> list[Token]:
+        while not self.is_at_end():
+            self.start = self.current
+            self.scan_token()
+
+        self.tokens.append(Token(TokenType.EOF, "", self.line))
+        return self.tokens
+
+    def scan_token(self):
+        c = self.advance()
+        
+        match c:
+            case "+":
+                self.add_token(TokenType.PLUS)
+            case "-":
+                self.add_token(TokenType.MINUS)
+            case "*":
+                self.add_token(TokenType.STAR)
+            case "/":
+                self.add_token(TokenType.SLASH)
+            case "(":
+                self.add_token(TokenType.LPAREN)
+            case ")":
+                self.add_token(TokenType.RPAREN)
+            case ";":
+                self.add_token(TokenType.SEMICOLON)
+            case " " | "\r" | "\t":
+                pass
+            case "\n":
+                self.line += 1
+            case _:
+                if c.isdigit():
+                    self.number()
+
+    def number(self) -> None:
+        while self.peek().isdigit():
+            self.advance()
+        
+        self.add_token(TokenType.NUMBER)
+
+    def peek(self) -> str:
+        if self.is_at_end():
+            return "\0"
+        return self.source[self.current]
+
+    def add_token(self, token_type: TokenType, literal: str | None = None):
+        text = self.source[self.start:self.current]
+        lexeme = literal if literal else text
+        self.tokens.append(Token(token_type, lexeme, self.line))
+
+    def advance(self) -> str:
+        self.current += 1
+        return self.source[self.current - 1]
+
+    def is_at_end(self) -> bool:
+        return self.current >= len(self.source)
+    
