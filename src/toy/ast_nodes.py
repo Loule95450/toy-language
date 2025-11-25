@@ -6,6 +6,10 @@ from typing import Any
 class ASTNode:
     pass
 
+####################
+# Expressions
+####################
+
 @dataclass
 class Expression(ASTNode):
     pass
@@ -24,5 +28,23 @@ class Binary(Expression):
 
 @dataclass
 class Unary(Expression):
+    """Une expression unaire est une expression qui prend un argument"""
     operator: Token
     right: Expression
+
+####################
+# Statements
+####################
+
+@dataclass
+class Statement(ASTNode):
+    pass
+
+@dataclass
+class ExpressionStatement(Statement):
+    expression: Expression
+
+@dataclass
+class VarStatement(Statement):
+    name: Token
+    initializer: Expression | None

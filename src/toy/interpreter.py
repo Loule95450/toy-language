@@ -1,13 +1,19 @@
 from typing import Any
-
-from toy.ast_nodes import ASTNode, Expression, Literal, Binary, Unary
+from toy.ast_nodes import Expression, Literal, Binary, Unary, Statement, ExpressionStatement
 from toy.tokens import TokenType
 
 
 class Interpreter:
-    def interpret(self, statements: list[ASTNode]):
+    def interpret(self, statements: list[Statement]):
         for statement in statements:
-            self.evaluate(statement)
+            self.execute(statement)
+
+    def execute(self, statement: Statement) -> None:
+        match statement:
+            case ExpressionStatement(expression):
+                self.evaluate(expression)
+            case _:
+                raise NotImplementedError(f"Unsupported statement type: {statement}")
 
     def evaluate(self, expression: Expression) -> Any:
         match expression:

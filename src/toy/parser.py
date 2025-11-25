@@ -1,5 +1,5 @@
 from typing import Callable
-from toy.ast_nodes import ASTNode, Expression, Binary, Literal
+from toy.ast_nodes import Statement, VarStatement, Expression, Binary, Unary, Literal, ExpressionStatement
 from toy.tokens import Token, TokenType
 
 class Parser:
@@ -7,15 +7,45 @@ class Parser:
         self.tokens = tokens
         self.current = 0
 
-    def parse(self) -> list[ASTNode]:
+    def parse(self) -> list[Statement]:
         statements = []
         while not self.is_at_end():
-            statements.append(self.parse_expression())
+            statements.append(self.parse_declaration())
 
         return statements
 
     ####################
-    # Parsing
+    # Statement
+    ####################
+
+    def parse_declaration(self) -> Statement:
+        if self.match(TokenType.VAR):
+            return self.parse_var_statement()
+        return self.parse_statement()
+
+    def parse_var_statement(self) -> Statement:
+        name = self.consume(TokenType.IDENTIFIER, "Expected variable name after 'var'")
+        initializer = None
+        if self.match(TokenType.EQUAL):
+            initializer = self.parse_expression()
+        
+        self.consume(TokenType.SEMICOLON, "Expected ';' after variable declaration")
+        
+        return VarStatement(name, initializer)
+
+    def parse_statement(self) -> Statement:
+        return self.parse_expression_statement()
+
+    def parse_expression_statement(self) -> Statement:
+        return self.parse_expression_statement()
+
+    def parse_expression_statement(self) -> Statement:
+        expression = self.parse_expression()
+        self.consume(TokenType.SEMICOLON, "Expected ';' after statement")
+        return ExpressionStatement(expression)
+
+    ####################
+    # Expression
     ####################
  
     def parse_expression(self) -> Expression:

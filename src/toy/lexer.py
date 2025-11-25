@@ -1,5 +1,4 @@
-from src.toy.tokens import TokenType
-from toy.tokens import Token
+from toy.tokens import KEYWORDS, TokenType, Token
 
 class Lexer:
     def __init__(self, source: str):
@@ -65,12 +64,25 @@ class Lexer:
             case _:
                 if c.isdigit():
                     self.number()
+                elif c.isalpha():
+                    self.identifier()
+                else:
+                    raise SyntaxError(f"Unexpected character {c}, line={self.line}")
 
     def number(self) -> None:
         while self.peek().isdigit():
             self.advance()
         
         self.add_token(TokenType.NUMBER)
+
+    def identifier(self) -> None:
+        # Si on parse var, on aura start=0, current=3
+        while self.peek().isalnum() or self.peek() == "_":
+            self.advance()
+        
+        text = self.source[self.start:self.current]
+        token_type = KEYWORDS.get(text, TokenType.IDENTIFIER)
+        self.add_token(token_type)
 
     def peek(self) -> str:
         if self.is_at_end():
