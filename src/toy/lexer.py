@@ -1,24 +1,4 @@
-"""
-The lexer module performs the tokenization of the source code.
-The best way to approach it is to build it incrementally.
 
-1. Create the Lexer basic structure:
-- tokenize()
-- is_at_end()
-- advance()
-- scan_token()
-- add_token()
-
-2. Implement the simplest tokens in scan_token(). Single characters:
-- operators: +, -, *, /
-- parenthesis: (, )
-- ;
-- white space skipping
-
-3. Implement numbers :
-- peek() to look ahead 1 char
-- number()
-"""
 
 from toy.tokens import Token, TokenType, KEYWORDS
 
@@ -43,7 +23,7 @@ class Lexer:
         c = self.advance()
 
         match c:
-            # Single characters
+
             case "+":
                 self.add_token(TokenType.PLUS)
             case "-":
@@ -58,14 +38,13 @@ class Lexer:
                 self.add_token(TokenType.RPAREN)
             case ";":
                 self.add_token(TokenType.SEMICOLON)
-            # Ignore whitespaces
-            # Don't worry about the string, the string() method will handle them
+
             case " " | "\r" | "\t":
                 pass
             case "\n":
                 self.line += 1
 
-            # One or 2 characters
+
             case "=":
                 (
                     self.add_token(TokenType.EQUAL_EQUAL)
@@ -93,7 +72,7 @@ class Lexer:
                     else self.add_token(TokenType.BANG)
                 )
 
-            # Everything else
+
             case _:
                 if c.isdigit():
                     self.number()
@@ -105,21 +84,20 @@ class Lexer:
                     )
 
     def number(self) -> None:
-        # We continue to advance until we reach a non-digit character
+
         while self.peek().isdigit():
             self.advance()
 
-        # Is it a float?
+
         if self.peek() == "." and self.peek_next().isdigit():
             self.advance()
             while self.peek().isdigit():
                 self.advance()
 
-        # Here we'll have the full number in self.source[self.start : self.current]
+
         self.add_token(TokenType.NUMBER)
 
     def identifier(self) -> None:
-        # We move until we reach a non-alphanumeric character or _
         while self.peek().isalnum() or self.peek() == "_":
             self.advance()
 
@@ -131,8 +109,7 @@ class Lexer:
         return self.current >= len(self.source)
 
     def advance(self):
-        # We advance the current position and return the previous character
-        # mark the current - 1 as "consumed"
+
         self.current += 1
         return self.source[self.current - 1]
 
@@ -142,13 +119,13 @@ class Lexer:
         self.tokens.append(Token(token_type, lexeme, self.line))
 
     def peek(self) -> str:
-        # We look ahead one character (current)
+
         if self.is_at_end():
             return "\0"
         return self.source[self.current]
 
     def peek_next(self) -> str:
-        # We look ahead two characters (current + 1)
+
         if self.current + 1 >= len(self.source):
             return "\0"
         return self.source[self.current + 1]

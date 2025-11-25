@@ -1,4 +1,4 @@
-"""The interpreter walks the AST and executes the statements"""
+
 
 from typing import Any
 
@@ -23,15 +23,12 @@ class Interpreter:
         self.environment = Environment()
 
     def interpret(self, statements: list[Statement], start_index: int = 0) -> None:
-        """Execute multiple statements for their side effects (used by REPL/file execution).
 
-        start_index: index of the first statement to execute (useful for a REPL, debugger, etc)
-        """
         for statement in statements[start_index:]:
             self.execute(statement)
 
     def execute(self, stmt: Statement) -> None:
-        """Execute a statement for its side effects. Statements don't return values."""
+
         match stmt:
             case ExpressionStatement(expression):
                 self.evaluate(expression)
@@ -50,9 +47,9 @@ class Interpreter:
                 raise ValueError(f"Unknown statement: {stmt}")
 
     def evaluate(self, expr: Expression) -> Any:
-        """Evaluate an expression and return its value."""
+
         match expr:
-            # Expressions
+
             case Literal(value):
                 return value
             case Binary(left, operator, right):
@@ -60,7 +57,7 @@ class Interpreter:
                 right_value = self.evaluate(right)
 
                 match operator.type:
-                    # One character operators
+
                     case TokenType.PLUS:
                         return left_value + right_value
                     case TokenType.MINUS:
@@ -70,7 +67,7 @@ class Interpreter:
                     case TokenType.SLASH:
                         return left_value / right_value
 
-                    # One or 2 character operators
+
                     case TokenType.EQUAL_EQUAL:
                         return left_value == right_value
                     case TokenType.BANG_EQUAL:

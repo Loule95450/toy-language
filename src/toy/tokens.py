@@ -3,7 +3,7 @@ from enum import auto, StrEnum
 
 
 class TokenType(StrEnum):
-    # Single-character tokens
+
     LPAREN = auto()
     RPAREN = auto()
     LBRACE = auto()
@@ -15,7 +15,7 @@ class TokenType(StrEnum):
     SLASH = auto()
     STAR = auto()
 
-    # One or two character tokens
+
     BANG = auto()
     BANG_EQUAL = auto()
     EQUAL = auto()
@@ -25,12 +25,12 @@ class TokenType(StrEnum):
     LESS = auto()
     LESS_EQUAL = auto()
 
-    # Literals
+
     IDENTIFIER = auto()
     NUMBER = auto()
     STRING = auto()
 
-    # Keywords
+
     AND = auto()
     ELSE = auto()
     FALSE = auto()

@@ -14,20 +14,20 @@ from toy.tokens import TokenType, Token
 
 
 def tokenize(source: str) -> list[Token]:
-    """Tokenize source code."""
+
     lexer = Lexer(source)
     return lexer.tokenize()
 
 
 def parse(source: str) -> list:
-    """Parse source code into AST."""
+
     tokens = tokenize(source)
     parser = Parser(tokens)
     return parser.parse()
 
 
 def evaluate(source: str):
-    """Evaluate source code and return result."""
+
     ast = parse(source)
     interpreter = Interpreter()
     result = None
@@ -39,18 +39,18 @@ def evaluate(source: str):
     return result
 
 
-# Lexer tests
+
 def test_lexer_tokenize():
     source = """3 + 2; 
     var a = 1; """
     tokens = tokenize(source)
     assert tokens == [
-        # Line 1
+
         Token(TokenType.NUMBER, "3", 1),
         Token(TokenType.PLUS, "+", 1),
         Token(TokenType.NUMBER, "2", 1),
         Token(TokenType.SEMICOLON, ";", 1),
-        # Line 2
+
         Token(TokenType.VAR, "var", 2),
         Token(TokenType.IDENTIFIER, "a", 2),
         Token(TokenType.EQUAL, "=", 2),
@@ -60,7 +60,7 @@ def test_lexer_tokenize():
     ]
 
 
-# Parser tests
+
 def test_parse_term():
     ast = parse("3 + 2;")
     assert ast == [
@@ -154,7 +154,6 @@ def test_parse_equality_operators():
 
 
 def test_parse_comparison_with_equality():
-    # Test precedence: comparison binds tighter than equality
     ast = parse("3 > 2 == 4;")  # (3 > 2) == 4
     assert ast == [
         ExpressionStatement(
@@ -197,7 +196,7 @@ def test_parse_var_assignment():
     ]
 
 
-# Interpreter tests
+
 @pytest.mark.parametrize(
     "source,expected",
     [

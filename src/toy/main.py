@@ -4,12 +4,7 @@ from toy.interpreter import Interpreter
 from toy.lexer import Lexer
 from toy.parser import Parser
 
-# Declared as a global var to keep the program state in memory
-# For example, if we start a REPL:
-# var a = 1;
-# print a + 2;
-#
-# At line 2, we want to retrieve the variable defined in line 1
+
 interpreter = Interpreter()
 
 
