@@ -1,0 +1,2 @@
+pytest==9.0.1
+textual==6.6.0
