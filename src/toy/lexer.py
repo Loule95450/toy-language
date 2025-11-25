@@ -36,6 +36,26 @@ class Lexer:
                 self.add_token(TokenType.RPAREN)
             case ";":
                 self.add_token(TokenType.SEMICOLON)
+            case "!=":
+                self.add_token(TokenType.BANG_EQUAL)
+            case "=":
+                if self.match("="):
+                    self.add_token(TokenType.EQUAL_EQUAL)
+                else:
+                    self.add_token(TokenType.EQUAL)
+            case "<":
+                if self.match("="):
+                    self.add_token(TokenType.LESS_EQUAL)
+                else:
+                    self.add_token(TokenType.LESS)
+            case ">":
+                if self.match("="):
+                    self.add_token(TokenType.GREATER_EQUAL)
+                else:
+                    self.add_token(TokenType.GREATER)
+            case "!":
+                if self.match("="):
+                    self.add_token(TokenType.BANG_EQUAL)
             case " " | "\r" | "\t":
                 pass
             case "\n":
@@ -67,3 +87,10 @@ class Lexer:
     def is_at_end(self) -> bool:
         return self.current >= len(self.source)
     
+    def match(self, expected: str) -> bool:
+        if self.is_at_end():
+            return False
+        if self.source[self.current] != expected:
+            return False
+        self.current += 1
+        return True
