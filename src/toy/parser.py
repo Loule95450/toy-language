@@ -30,7 +30,7 @@ class Parser:
     def parse_primary(self) -> Expression:
         if self.match(TokenType.NUMBER):
             return Literal(float(self.previous().lexeme))
-
+        
         raise SyntaxError(f"Unexpected token {self.peek().type}, line={self.peek().line}")
 
     ####################
