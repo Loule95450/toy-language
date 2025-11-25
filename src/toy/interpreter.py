@@ -19,16 +19,17 @@ from toy.tokens import TokenType
 
 
 class Interpreter:
+    """Exécute le programme en parcourant l'AST."""
     def __init__(self) -> None:
         self.environment = Environment()
 
     def interpret(self, statements: list[Statement], start_index: int = 0) -> None:
-
+        """Point d'entrée pour exécuter une liste d'instructions."""
         for statement in statements[start_index:]:
             self.execute(statement)
 
     def execute(self, stmt: Statement) -> None:
-
+        """Exécute une instruction spécifique."""
         match stmt:
             case ExpressionStatement(expression):
                 self.evaluate(expression)
@@ -47,9 +48,8 @@ class Interpreter:
                 raise ValueError(f"Unknown statement: {stmt}")
 
     def evaluate(self, expr: Expression) -> Any:
-
+        """Évalue une expression et retourne sa valeur."""
         match expr:
-
             case Literal(value):
                 return value
             case Binary(left, operator, right):
@@ -66,8 +66,6 @@ class Interpreter:
                         return left_value * right_value
                     case TokenType.SLASH:
                         return left_value / right_value
-
-
                     case TokenType.EQUAL_EQUAL:
                         return left_value == right_value
                     case TokenType.BANG_EQUAL:

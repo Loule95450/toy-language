@@ -3,7 +3,7 @@ from enum import auto, StrEnum
 
 
 class TokenType(StrEnum):
-
+    """Énumération des types de tokens."""
     LPAREN = auto()
     RPAREN = auto()
     LBRACE = auto()
@@ -15,7 +15,6 @@ class TokenType(StrEnum):
     SLASH = auto()
     STAR = auto()
 
-
     BANG = auto()
     BANG_EQUAL = auto()
     EQUAL = auto()
@@ -25,11 +24,9 @@ class TokenType(StrEnum):
     LESS = auto()
     LESS_EQUAL = auto()
 
-
     IDENTIFIER = auto()
     NUMBER = auto()
     STRING = auto()
-
 
     AND = auto()
     ELSE = auto()
@@ -47,13 +44,12 @@ class TokenType(StrEnum):
 
     EOF = auto()
 
-
 @dataclass
 class Token:
+    """Représente un token avec son type, son lexème et sa ligne."""
     type: TokenType
     lexeme: str
     line: int
-
 
 KEYWORDS = {
     "and": TokenType.AND,

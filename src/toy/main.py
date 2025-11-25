@@ -9,12 +9,14 @@ interpreter = Interpreter()
 
 
 def run_file(path: str) -> None:
+    """Lit et exécute un fichier source."""
     with open(path, "r") as f:
         source = f.read()
     run(source)
 
 
 def run(source: str) -> None:
+    """Exécute le code source fourni."""
     try:
         lexer = Lexer(source)
         tokens = lexer.tokenize()
@@ -29,6 +31,7 @@ def run(source: str) -> None:
 
 
 def repl() -> None:
+    """Lance une boucle de lecture-évaluation-impression (REPL)."""
     print("Toy Language REPL")
     print("Type 'exit' to quit\n")
 
