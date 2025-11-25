@@ -31,17 +31,35 @@ class Parser:
         return self.binary_left(self.parse_factor, TokenType.PLUS, TokenType.MINUS)
 
     def parse_factor(self) -> Expression:
-        return self.binary_left(self.parse_primary, TokenType.STAR, TokenType.SLASH)
+        return self.binary_left(self.parse_unary, TokenType.STAR, TokenType.SLASH)
+
+    def parse_unary(self) -> Expression:
+        if self.match(TokenType.MINUS, TokenType.BANG):
+            operator = self.previous()
+            right = self.parse_unary()
+            return Unary(operator, right)
+
+        return self.parse_primary()
 
     def parse_primary(self) -> Expression:
         if self.match(TokenType.NUMBER):
             return Literal(float(self.previous().lexeme))
+
+        if self.match(TokenType.LPAREN):
+            expr = self.parse_expression()
+            self.consume(TokenType.RPAREN, "Expected ')' after expression")
+            return expr
         
         raise SyntaxError(f"Unexpected token {self.peek().type}, line={self.peek().line}")
 
     ####################
     # Utils
     ####################
+
+    def consume(self, token_type: TokenType, message: str) -> Token:
+        if self.check(token_type):
+            return self.advance()
+        raise SyntaxError(f"{message}, line={self.peek().line}")
 
     def binary_left(self, operand_fn: Callable, *operand_types: TokenType) -> Expression:
         left = operand_fn()

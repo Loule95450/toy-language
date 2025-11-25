@@ -56,6 +56,8 @@ class Lexer:
             case "!":
                 if self.match("="):
                     self.add_token(TokenType.BANG_EQUAL)
+                else:
+                    self.add_token(TokenType.BANG)
             case " " | "\r" | "\t":
                 pass
             case "\n":

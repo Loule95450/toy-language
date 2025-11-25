@@ -21,3 +21,8 @@ class Binary(Expression):
     left: Expression
     operator: Token
     right: Expression
+
+@dataclass
+class Unary(Expression):
+    operator: Token
+    right: Expression

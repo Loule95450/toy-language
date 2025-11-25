@@ -3,7 +3,27 @@ from toy.parser import Parser
 from toy.lexer import Lexer
 from toy.tokens import TokenType, Token
 from toy.ast_nodes import Binary, Literal
+import pytest
 
+def tokenize(source: str) -> list[Token]:
+    """Tokenize source code."""
+    lexer = Lexer(source)
+    return lexer.tokenize()
+
+def parse(source: str) -> list:
+    """Parse source code into AST."""
+    tokens = tokenize(source)
+    parser = Parser(tokens)
+    return parser.parse()
+
+def evaluate(source: str):
+    """Evaluate source code and return result."""
+    ast = parse(source)
+    interpreter = Interpreter()
+    result = None
+    for statement in ast:
+        result = interpreter.evaluate(statement)
+    return result
 
 def test_lexer_tokenize():
     source = "3 + 2"
@@ -110,4 +130,36 @@ def test_parse_comparison_equality():
             Token(TokenType.EQUAL_EQUAL, "==", 1),
             Literal(4.0),
         ),
+    ]
+
+@pytest.mark.parametrize(
+    "source,expected",
+    [
+        ("3 + 2 * 4", 11.0),  # Precedence: 3 + (2 * 4)
+        ("3 + 2 > 4", True),  # Comparison: 5 > 4
+        ("3 + 2 == 5", True),  # Equality: 5 == 5
+        ("3 + 2 == 4", False),  # Equality: 5 == 4
+    ],
+)
+def test_evaluate_expressions(source, expected):
+    assert evaluate(source) == expected
+
+def test_parse_factor_with_parenthesis():
+    source = "(3 + 2) * 4"
+    lexer = Lexer(source)
+
+    tokens = lexer.tokenize()
+    parser = Parser(tokens)
+    ast = parser.parse()
+
+    assert ast == [
+        Binary(
+            Binary(
+                Literal(3.0),
+                Token(TokenType.PLUS, "+", 1),
+                Literal(2.0),
+            ),
+            Token(TokenType.STAR, "*", 1),
+            Literal(4.0),
+        )
     ]

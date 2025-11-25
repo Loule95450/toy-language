@@ -1,6 +1,6 @@
 from typing import Any
 
-from toy.ast_nodes import ASTNode, Expression, Literal, Binary
+from toy.ast_nodes import ASTNode, Expression, Literal, Binary, Unary
 from toy.tokens import TokenType
 
 
@@ -13,6 +13,14 @@ class Interpreter:
         match expression:
             case Literal(value):
                 return value
+
+            case Unary(operator, right):
+                right_value = self.evaluate(right)
+                match operator.type:
+                    case TokenType.MINUS:
+                        return -right_value
+                    case TokenType.BANG:
+                        return not right_value
 
             case Binary(left, operator, right):
                 left_value = self.evaluate(left)
