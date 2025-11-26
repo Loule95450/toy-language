@@ -30,6 +30,10 @@ class Interpreter:
                     value = self.evaluate(initializer)
                 self.environment.define(name.lexeme, value)
 
+            case FunctionDeclarationStatement(name) as st:
+                function = ToyFunction(self, st, Environment(self.environment))
+                self.environment.define(name.lexeme, function)
+
             case PrintStatement(expression):
                 value = self.evaluate(expression)
                 print(value)
@@ -121,3 +125,10 @@ class Interpreter:
             raise e
         finally:
             self.environment = previous
+
+class ToyFunction:
+    def __init__(self, interpreter: Interpreter, declaration: FunctionDeclarationStatement, closure: Environment) -> None:
+        self.interpreter = interpreter
+        self.declaration = declaration
+        self.closure = closure
+            

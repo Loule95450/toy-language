@@ -23,6 +23,8 @@ class Parser:
 
         if self.match(TokenType.VAR):
             return self.parse_var_declaration()
+        if self.match(TokenType.FN):
+            return self.parse_function_declaration()
 
         return self.parse_statement()
 
@@ -41,6 +43,30 @@ class Parser:
         self.consume(TokenType.SEMICOLON, "Expect ';' after variable declaration.")
 
         return VarStatement(name, initializer)
+
+    def parse_function_declaration(self) -> Statement:
+        name = self.consume(TokenType.IDENTIFIER, "Expect function name.")
+        self.consume(TokenType.LPAREN, "Expect '(' after function name.")
+
+        parameters = []
+        if not self.check(TokenType.RPAREN):
+            parameters.append(
+                self.consume(TokenType.IDENTIFIER, "Expect parameter name.")
+            )
+            while self.match(TokenType.COMMA):
+                parameters.append(
+                    self.consume(TokenType.IDENTIFIER, "Expect parameter name.")
+                )
+
+        self.consume(TokenType.RPAREN, "Expect ')' after parameters.")
+        self.consume(TokenType.LBRACE, "Expect '{' before function body.")
+
+        body = []
+        while not self.check(TokenType.RBRACE):
+            body.append(self.parse_declaration())
+
+        self.consume(TokenType.RBRACE, "Expect '}' after function body.")
+        return FunctionDeclarationStatement(name, parameters, body)
 
     def parse_statement(self) -> Statement:
         """Analyse une instruction (autre que déclaration)."""
