@@ -2,18 +2,7 @@
 
 from typing import Any
 
-from toy.ast_nodes import (
-    Statement,
-    Expression,
-    Literal,
-    Binary,
-    Unary,
-    VarStatement,
-    Variable,
-    ExpressionStatement,
-    VariableAssignment,
-    PrintStatement,
-)
+from toy.ast_nodes import *
 from toy.environment import Environment
 from toy.tokens import TokenType
 
@@ -43,6 +32,16 @@ class Interpreter:
             case PrintStatement(expression):
                 value = self.evaluate(expression)
                 print(value)
+
+            case IfStatement(condition, then_branch, else_branch):
+                condition_value = self.evaluate(condition)
+                if condition_value:
+                    self.execute(then_branch)
+                else:
+                    self.execute(else_branch)
+
+            case BlockStatement(statements):
+                self.execute_block(statements)
 
             case _:
                 raise ValueError(f"Unknown statement: {stmt}")
@@ -103,3 +102,8 @@ class Interpreter:
 
             case _:
                 raise ValueError(f"Unknown expression: {expr}")
+
+    def execute_block(self, statements: list[Statement]) -> None:
+        """Exécute une liste d'instructions dans un bloc."""
+        for statement in statements:
+            self.execute(statement)

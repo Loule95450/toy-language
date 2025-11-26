@@ -84,3 +84,15 @@ class VarStatement(Statement):
 class PrintStatement(Statement):
     """Instruction d'affichage."""
     expression: Expression
+
+@dataclass
+class IfStatement(Statement):
+    """Instruction conditionnelle."""
+    condition: Expression
+    then_branch: Statement
+    else_branch: Statement | None
+
+@dataclass
+class BlockStatement(Statement):
+    """Instruction qui contient plusieurs instructions."""
+    statements: list[Statement]

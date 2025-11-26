@@ -37,6 +37,10 @@ class Lexer:
                 self.add_token(TokenType.LPAREN)
             case ")":
                 self.add_token(TokenType.RPAREN)
+            case "{":
+                self.add_token(TokenType.LBRACE)
+            case "}":
+                self.add_token(TokenType.RBRACE)
             case ";":
                 self.add_token(TokenType.SEMICOLON)
             case " " | "\r" | "\t":
@@ -44,30 +48,25 @@ class Lexer:
             case "\n":
                 self.line += 1
             case "=":
-                (
+                if self.match('='):
                     self.add_token(TokenType.EQUAL_EQUAL)
-                    if self.match("=")
-                    else self.add_token(TokenType.EQUAL)
-                )
+                else:
+                    self.add_token(TokenType.EQUAL)
             case "<":
-                (
+                if self.match("="):
                     self.add_token(TokenType.LESS_EQUAL)
-                    if self.match("=")
-                    else self.add_token(TokenType.LESS)
-                )
+                else:
+                    self.add_token(TokenType.LESS)
             case ">":
-                (
+                if self.match("="):
                     self.add_token(TokenType.GREATER_EQUAL)
-                    if self.match("=")
-                    else self.add_token(TokenType.GREATER)
-                )
+                else:
+                    self.add_token(TokenType.GREATER)
             case "!":
-                (
+                if self.match("="):
                     self.add_token(TokenType.BANG_EQUAL)
-                    if self.match("=")
-                    else self.add_token(TokenType.BANG)
-                )
-
+                else:
+                    self.add_token(TokenType.BANG)
             case _:
                 if c.isdigit():
                     self.number()

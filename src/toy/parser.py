@@ -1,21 +1,7 @@
 
 
-from _ast import Assign
+from toy.ast_nodes import *
 from typing import Callable
-
-from toy.ast_nodes import (
-    ASTNode,
-    Binary,
-    Literal,
-    Unary,
-    VarStatement,
-    Expression,
-    Statement,
-    ExpressionStatement,
-    Variable,
-    VariableAssignment,
-    PrintStatement,
-)
 from toy.tokens import Token, TokenType
 
 
@@ -60,14 +46,38 @@ class Parser:
         """Analyse une instruction (autre que déclaration)."""
         if self.match(TokenType.PRINT):
             return self.parse_print_statement()
+        if self.match(TokenType.IF):
+            return self.parse_if_statement()
+        if self.match(TokenType.LBRACE):
+            return self.parse_block_statement()
 
         return self.parse_expression_statement()
+
 
     def parse_print_statement(self) -> Statement:
         """Analyse une instruction d'affichage."""
         expr = self.parse_expression()
         self.consume(TokenType.SEMICOLON, "Expect ';' after expression.")
         return PrintStatement(expr)
+
+    def parse_if_statement(self) -> Statement:
+        """Analyse une instruction conditionnelle."""
+        self.consume(TokenType.LPAREN, "Expect '(' after 'if'")
+        condition = self.parse_expression()
+        self.consume(TokenType.RPAREN, "Expect ')' after 'if'")
+        then_branch = self.parse_statement()
+        else_branch = None
+        if self.match(TokenType.ELSE):
+            else_branch = self.parse_statement()
+        return IfStatement(condition, then_branch, else_branch)
+
+    def parse_block_statement(self) -> BlockStatement:
+        """Analyse une instruction de bloc."""
+        statements = []
+        while not self.check(TokenType.RBRACE) and not self.is_at_end():
+            statements.append(self.parse_declaration())
+        self.consume(TokenType.RBRACE, "Expect '}' after block.")
+        return BlockStatement(statements)
 
     def parse_expression_statement(self) -> Statement:
         """Analyse une instruction d'expression."""

@@ -1,12 +1,5 @@
 import pytest
-from toy.ast_nodes import (
-    Binary,
-    Literal,
-    Unary,
-    VarStatement,
-    ExpressionStatement,
-    VariableAssignment,
-)
+from toy.ast_nodes import *
 from toy.interpreter import Interpreter
 from toy.lexer import Lexer
 from toy.parser import Parser
@@ -210,3 +203,18 @@ def test_parse_var_assignment():
 )
 def test_evaluate_expressions(source, expected):
     assert evaluate(source) == expected
+
+def test_parse_if_statement():
+    ast = parse("""if (1 == 2) {
+                        print 3;
+                    } else {
+                        print 4;
+                    }""")
+
+    assert ast == [
+        IfStatement(
+            condition=Binary(Literal(1.0), Token(TokenType.EQUAL_EQUAL, "==", 1), Literal(2.0)),
+            then_branch=BlockStatement([PrintStatement(Literal(3.0))]),
+            else_branch=BlockStatement([PrintStatement(Literal(4.0))]),
+        )
+    ]
