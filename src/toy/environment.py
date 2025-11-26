@@ -5,7 +5,7 @@ class Environment:
     """Gère la portée des variables et stocke leurs valeurs."""
 
 
-    def __init__(self):
+    def __init__(self, enclosing: "Environment" = None):
         self.values: dict[str, int] = {}
 
     def define(self, name: str, value: Any) -> None:
@@ -22,10 +22,12 @@ class Environment:
 
         raise RuntimeError(f"Variable '{name}' is not defined.")
 
-    def assign(self, name: str, value: Any) -> None:
+    def assign(self, name: str, value: Any) -> Any:
         """Met à jour la valeur d'une variable existante."""
         if name in self.values:
             self.values[name] = value
-            return
+            return value
+        elif self.enclosing:
+            return self.enclosing.assign(name, value)
 
         raise RuntimeError(f"Undefined variable '{name}'.")
