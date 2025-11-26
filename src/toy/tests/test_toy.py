@@ -32,6 +32,13 @@ def evaluate(source: str):
     return result
 
 
+def interpret(source: str):
+    ast = parse(source)
+    interpreter = Interpreter()
+    interpreter.interpret(ast)
+    return interpreter
+
+
 
 def test_lexer_tokenize():
     source = """3 + 2; 
@@ -218,3 +225,37 @@ def test_parse_if_statement():
             else_branch=BlockStatement([PrintStatement(Literal(4.0))]),
         )
     ]
+
+def test_block_environment_scope():
+    source = """
+    var a = 1;
+    var b = 2;
+    {
+        var a = 2;
+        var c = 3;
+        b = 10;
+    }
+    """
+    interpreter = interpret(source)
+
+    # The block scope doesn't affect the global a variable
+    assert interpreter.environment.get("a") == 1.0
+
+    # The b variable is properly resolved in the block scope from the outer scope
+    assert interpreter.environment.get("b") == 10.0
+
+    # The c variable is not defined in the global scope
+    with pytest.raises(RuntimeError):
+        interpreter.environment.get("c")
+
+def test_while_statement(capsys):
+    source = """
+    var i = 0;
+    while (i < 5) {
+        print i;
+        i = i + 1;
+    }
+    """
+    interpret(source)
+    captured = capsys.readouterr()
+    assert captured.out == "0.0\n1.0\n2.0\n3.0\n4.0\n"

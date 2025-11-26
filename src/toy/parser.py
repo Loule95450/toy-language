@@ -48,6 +48,8 @@ class Parser:
             return self.parse_print_statement()
         if self.match(TokenType.IF):
             return self.parse_if_statement()
+        if self.match(TokenType.WHILE):
+            return self.parse_while_statement()
         if self.match(TokenType.LBRACE):
             return self.parse_block_statement()
 
@@ -69,7 +71,17 @@ class Parser:
         else_branch = None
         if self.match(TokenType.ELSE):
             else_branch = self.parse_statement()
+
         return IfStatement(condition, then_branch, else_branch)
+
+    def parse_while_statement(self) -> Statement:
+        """Analyse une instruction conditionnelle."""
+        self.consume(TokenType.LPAREN, "Expect '(' after 'while'")
+        condition = self.parse_expression()
+        self.consume(TokenType.RPAREN, "Expect ')' after 'while'")
+
+        body = self.parse_statement()
+        return WhileStatement(condition, body)
 
     def parse_block_statement(self) -> BlockStatement:
         """Analyse une instruction de bloc."""

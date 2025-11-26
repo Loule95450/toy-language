@@ -85,12 +85,19 @@ class PrintStatement(Statement):
     """Instruction d'affichage."""
     expression: Expression
 
+
 @dataclass
 class IfStatement(Statement):
     """Instruction conditionnelle."""
     condition: Expression
     then_branch: Statement
     else_branch: Statement | None
+
+@dataclass
+class WhileStatement(Statement):
+    """Instruction conditionnelle."""
+    condition: Expression
+    body: Statement
 
 @dataclass
 class BlockStatement(Statement):

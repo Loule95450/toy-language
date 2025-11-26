@@ -1,5 +1,6 @@
 
 
+from pygments.token import String
 from typing import Any
 
 from toy.ast_nodes import *
@@ -39,6 +40,10 @@ class Interpreter:
                     self.execute(then_branch)
                 else:
                     self.execute(else_branch)
+
+            case WhileStatement(condition, body):
+                while self.evaluate(condition):
+                    self.execute(body)
 
             case BlockStatement(statements):
                 self.execute_block(statements)
@@ -105,5 +110,14 @@ class Interpreter:
 
     def execute_block(self, statements: list[Statement]) -> None:
         """Exécute une liste d'instructions dans un bloc."""
-        for statement in statements:
-            self.execute(statement)
+        previous = self.environment
+        env = Environment(self.environment)
+        
+        try:
+            self.environment = env
+            for statement in statements:
+                self.execute(statement)
+        except RuntimeError as e:
+            raise e
+        finally:
+            self.environment = previous

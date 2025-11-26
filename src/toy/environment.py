@@ -6,6 +6,7 @@ class Environment:
 
 
     def __init__(self, enclosing: "Environment" = None):
+        self.enclosing = enclosing
         self.values: dict[str, int] = {}
 
     def define(self, name: str, value: Any) -> None:
@@ -19,6 +20,8 @@ class Environment:
         """Récupère la valeur d'une variable."""
         if name in self.values:
             return self.values[name]
+        elif self.enclosing:
+            return self.enclosing.get(name)
 
         raise RuntimeError(f"Variable '{name}' is not defined.")
 
