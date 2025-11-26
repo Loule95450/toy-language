@@ -100,6 +100,21 @@ class WhileStatement(Statement):
     body: Statement
 
 @dataclass
+class ForStatement(Statement):
+    """Instruction conditionnelle."""
+    initializer: Statement
+    condition: Expression
+    body: Statement
+
+@dataclass
 class BlockStatement(Statement):
     """Instruction qui contient plusieurs instructions."""
     statements: list[Statement]
+
+
+@dataclass
+class FunctionDeclarationStatement(Statement):
+    """Instruction de déclaration de fonction."""
+    name: Token
+    parameters: list[Token]
+    body: BlockStatement

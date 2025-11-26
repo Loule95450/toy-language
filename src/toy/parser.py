@@ -50,6 +50,8 @@ class Parser:
             return self.parse_if_statement()
         if self.match(TokenType.WHILE):
             return self.parse_while_statement()
+        if self.match(TokenType.FOR):
+            return self.parse_for_statement()
         if self.match(TokenType.LBRACE):
             return self.parse_block_statement()
 
@@ -82,6 +84,43 @@ class Parser:
 
         body = self.parse_statement()
         return WhileStatement(condition, body)
+
+    def parse_for_statement(self) -> Statement:
+        """Analyse une instruction conditionnelle."""
+        self.consume(TokenType.LPAREN, "Expect '(' after 'for'.")
+
+        initializer = None
+        if self.match(TokenType.SEMICOLON):
+            pass
+        elif self.match(TokenType.VAR):
+            initializer = self.parse_var_declaration()
+        else:
+            initializer = self.parse_expression_statement()
+
+        condition = None
+        if not self.check(TokenType.SEMICOLON):
+            condition = self.parse_expression()
+        self.consume(TokenType.SEMICOLON, "Expect ';' after loop condition.")
+
+        increment = None
+        if not self.check(TokenType.RPAREN):
+            increment = self.parse_expression()
+        self.consume(TokenType.RPAREN, "Expect ')' after for clauses.")
+
+        body = self.parse_statement()
+
+        if increment is not None:
+            body = BlockStatement([body, ExpressionStatement(increment)])
+
+        if condition is None:
+            condition = Literal(True)
+
+        body = WhileStatement(condition, body)
+
+        if initializer is not None:
+            body = BlockStatement([initializer, body])
+
+        return body
 
     def parse_block_statement(self) -> BlockStatement:
         """Analyse une instruction de bloc."""
