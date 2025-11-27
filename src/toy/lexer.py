@@ -43,6 +43,8 @@ class Lexer:
                 self.add_token(TokenType.RBRACE)
             case ";":
                 self.add_token(TokenType.SEMICOLON)
+            case ",":
+                self.add_token(TokenType.COMMA)
             case " " | "\r" | "\t":
                 pass
             case "\n":
@@ -50,6 +52,8 @@ class Lexer:
             case "=":
                 if self.match('='):
                     self.add_token(TokenType.EQUAL_EQUAL)
+                elif self.match('>'):
+                    self.add_token(TokenType.ARROW)
                 else:
                     self.add_token(TokenType.EQUAL)
             case "<":

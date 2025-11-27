@@ -41,6 +41,9 @@ class TokenType(StrEnum):
     TRUE = auto()
     VAR = auto()
     WHILE = auto()
+    MATCH = auto()
+    CASE = auto()
+    ARROW = auto()
 
     EOF = auto()
 
@@ -65,4 +68,6 @@ KEYWORDS = {
     "true": TokenType.TRUE,
     "var": TokenType.VAR,
     "while": TokenType.WHILE,
+    "match": TokenType.MATCH,
+    "case": TokenType.CASE,
 }

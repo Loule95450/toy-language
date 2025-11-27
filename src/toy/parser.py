@@ -80,6 +80,8 @@ class Parser:
             return self.parse_for_statement()
         if self.match(TokenType.LBRACE):
             return self.parse_block_statement()
+        if self.match(TokenType.RETURN):
+            return self.parse_return_statement()
 
         return self.parse_expression_statement()
 
@@ -147,6 +149,16 @@ class Parser:
             body = BlockStatement([initializer, body])
 
         return body
+
+    def parse_return_statement(self) -> Statement:
+        keyword = self.previous()
+
+        value = None
+        if not self.check(TokenType.SEMICOLON):
+            value = self.parse_expression()
+
+        self.consume(TokenType.SEMICOLON, "Expect ';' after return value.")
+        return ReturnStatement(keyword, value)
 
     def parse_block_statement(self) -> BlockStatement:
         """Analyse une instruction de bloc."""
@@ -238,9 +250,32 @@ class Parser:
             self.consume(TokenType.RPAREN, "Expected ')' after expression.")
             return expr
 
+        if self.match(TokenType.MATCH):
+            return self.parse_match_expression()
+
         raise SyntaxError(
             f"Unexpected token. token: {self.peek().lexeme}, line: {self.peek().line}"
         )
+
+    def parse_match_expression(self) -> Expression:
+        """Analyse une expression match."""
+        # 'match' keyword is already consumed
+        subject = self.parse_expression()
+        self.consume(TokenType.LBRACE, "Expect '{' after match subject.")
+
+        cases = []
+        while not self.check(TokenType.RBRACE) and not self.is_at_end():
+            self.consume(TokenType.CASE, "Expect 'case' before match pattern.")
+            pattern = self.parse_expression()
+            self.consume(TokenType.ARROW, "Expect '=>' after match pattern.")
+            body = self.parse_expression()
+            cases.append(MatchCase(pattern, body))
+
+            if self.match(TokenType.COMMA):
+                pass
+        
+        self.consume(TokenType.RBRACE, "Expect '}' after match cases.")
+        return MatchExpression(subject, cases)
 
     ##########################################################################
     # Utils

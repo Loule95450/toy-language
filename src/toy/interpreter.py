@@ -50,7 +50,10 @@ class Interpreter:
                     self.execute(body)
 
             case BlockStatement(statements):
-                self.execute_block(statements)
+                self.execute_block(statements, Environment(self.environment))
+
+            case ReturnStatement(value):
+                raise Return(self.evaluate(value))
 
             case _:
                 raise ValueError(f"Unknown statement: {stmt}")
@@ -109,13 +112,33 @@ class Interpreter:
                 self.environment.assign(name.lexeme, value)
                 return value
 
+            case FunctionCall(callee, arguments):
+                function = self.evaluate(callee)
+
+                if not isinstance(function, ToyFunction):
+                    raise ValueError(f"Unknown function call: {callee}")
+
+                args = [self.evaluate(arg) for arg in arguments]
+
+                return function.call(args)
+
+            case MatchExpression(subject, cases):
+                subject_value = self.evaluate(subject)
+
+                for match_case in cases:
+                    pattern_value = self.evaluate(match_case.pattern)
+                    
+                    if subject_value == pattern_value:
+                        return self.evaluate(match_case.body)
+                
+                raise RuntimeError(f"No match for value: {subject_value}")
+
             case _:
                 raise ValueError(f"Unknown expression: {expr}")
 
-    def execute_block(self, statements: list[Statement]) -> None:
+    def execute_block(self, statements: list[Statement], env: Environment) -> None:
         """Exécute une liste d'instructions dans un bloc."""
         previous = self.environment
-        env = Environment(self.environment)
         
         try:
             self.environment = env
@@ -126,9 +149,24 @@ class Interpreter:
         finally:
             self.environment = previous
 
+class Return:
+    def __init__(self, value: Any) -> None:
+        self.value = value
+
 class ToyFunction:
     def __init__(self, interpreter: Interpreter, declaration: FunctionDeclarationStatement, closure: Environment) -> None:
         self.interpreter = interpreter
         self.declaration = declaration
         self.closure = closure
-            
+    
+    def call(self, arguments: list[Any]) -> Any:
+        env = Environment(self.closure)
+        
+        for param, arg in zip(self.declaration.parameters, arguments):
+            env.define(param.lexeme, arg)
+
+        try:
+            self.interpreter.execute_block(self.declaration.body, env)
+        except Return as ret:
+            return ret.value
+        return None

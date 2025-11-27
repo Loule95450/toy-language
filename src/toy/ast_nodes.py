@@ -51,11 +51,27 @@ class Variable(Expression):
 @dataclass
 class VariableAssignment(Expression):
     """Représente l'assignation d'une valeur à une variable."""
-
-
     name: Token
     value: Expression
 
+@dataclass
+class FunctionCall(Expression):
+    callee: Expression
+    arguments: list[Expression]
+
+
+@dataclass
+class MatchCase(ASTNode):
+    """Représente un cas dans une expression match."""
+    pattern: Expression
+    body: Expression
+
+
+@dataclass
+class MatchExpression(Expression):
+    """Représente une expression match."""
+    subject: Expression
+    cases: list[MatchCase]
 
 ##############################################################################
 # Statements
@@ -118,3 +134,10 @@ class FunctionDeclarationStatement(Statement):
     name: Token
     parameters: list[Token]
     body: BlockStatement
+
+
+@dataclass
+class ReturnStatement(Statement):
+    """Instruction de retour."""
+    keyword: Token
+    value: Expression | None
