@@ -36,6 +36,14 @@ class Binary(Expression):
 
 
 @dataclass
+class Logical(Expression):
+    """Représente une opération logique (ex: a and b)."""
+    left: Expression
+    operator: Token
+    right: Expression
+
+
+@dataclass
 class Unary(Expression):
     """Représente une opération unaire (ex: -a, !a)."""
     operator: Token

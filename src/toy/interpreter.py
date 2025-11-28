@@ -112,6 +112,18 @@ class Interpreter:
                 self.environment.assign(name.lexeme, value)
                 return value
 
+            case Logical(left, operator, right):
+                left_value = self.evaluate(left)
+
+                if operator.type == TokenType.OR:
+                    if left_value:
+                        return left_value
+                else:
+                    if not left_value:
+                        return left_value
+
+                return self.evaluate(right)
+
             case FunctionCall(callee, arguments):
                 function = self.evaluate(callee)
 
