@@ -184,7 +184,7 @@ class Parser:
 
     def parse_assignment(self) -> Expression:
         """Analyse une assignation."""
-        expr = self.parse_equality()
+        expr = self.parse_or()
 
         if self.match(TokenType.EQUAL):
             equals = self.previous()
@@ -197,6 +197,28 @@ class Parser:
             raise SyntaxError(f"Invalid assignment target. token: {equals.lexeme}")
 
         return expr
+
+    def parse_or(self) -> Expression:
+        """Analyse une opération logique OU."""
+        left = self.parse_and()
+
+        while self.match(TokenType.OR):
+            operator = self.previous()
+            right = self.parse_and()
+            left = Logical(left, operator, right)
+
+        return left
+
+    def parse_and(self) -> Expression:
+        """Analyse une opération logique ET."""
+        left = self.parse_equality()
+
+        while self.match(TokenType.AND):
+            operator = self.previous()
+            right = self.parse_equality()
+            left = Logical(left, operator, right)
+
+        return left
 
     def parse_equality(self) -> Expression:
         """Analyse une égalité."""
@@ -239,8 +261,20 @@ class Parser:
 
     def parse_primary(self) -> Expression:
         """Analyse une expression primaire (littéral, variable, parenthèses)."""
+        if self.match(TokenType.FALSE):
+            return Literal(False)
+
+        if self.match(TokenType.TRUE):
+            return Literal(True)
+
+        if self.match(TokenType.NULL):
+            return Literal(None)
+
         if self.match(TokenType.NUMBER):
             return Literal(float(self.previous().lexeme))
+
+        if self.match(TokenType.STRING):
+            return Literal(self.previous().lexeme.strip('"'))
 
         if self.match(TokenType.IDENTIFIER):
             return Variable(self.previous())

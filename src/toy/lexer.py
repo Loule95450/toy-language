@@ -32,7 +32,11 @@ class Lexer:
             case "*":
                 self.add_token(TokenType.STAR)
             case "/":
-                self.add_token(TokenType.SLASH)
+                if self.match("/"):
+                    while self.peek() != "\n" and not self.is_at_end():
+                        self.advance()
+                else:
+                    self.add_token(TokenType.SLASH)
             case "(":
                 self.add_token(TokenType.LPAREN)
             case ")":
@@ -71,6 +75,8 @@ class Lexer:
                     self.add_token(TokenType.BANG_EQUAL)
                 else:
                     self.add_token(TokenType.BANG)
+            case '"':
+                self.string()
             case _:
                 if c.isdigit():
                     self.number()
@@ -80,6 +86,23 @@ class Lexer:
                     raise SyntaxError(
                         f"Unexpected character. character: '{c}', line: {self.line}"
                     )
+
+    def string(self) -> None:
+        """Analyse une chaîne de caractères."""
+        while self.peek() != '"' and not self.is_at_end():
+            if self.peek() == "\n":
+                self.line += 1
+            self.advance()
+
+        if self.is_at_end():
+            raise SyntaxError("Unterminated string.")
+
+        # The closing ".
+        self.advance()
+
+        # Trim the surrounding quotes.
+        value = self.source[self.start + 1 : self.current - 1]
+        self.add_token(TokenType.STRING, value)
 
     def number(self) -> None:
         """Analyse un nombre (entier ou flottant)."""
